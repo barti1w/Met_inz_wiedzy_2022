@@ -330,15 +330,16 @@ def gauss(matrix):
             times = matrix[x + 1 + y][y] / matrix[y][y]
             matrix[x + 1 + y] = matrix[x + 1 + y] - matrix[y] * times
 
-            done = True
-            for z in range(column_len - 1): #check if any of rows are 0 not only last
-                if matrix[column_len - 1][z] != 0:
-                    done = False
+            for q in range(column_len):
+                done = True
+                for z in range(column_len - 1):
+                    if matrix[q][z] != 0:
+                        done = False
 
-            if done is True:
-                for k in range(column_len * 2 - 1, column_len - 1, -1):
-                    wynik.append(matrix[column_len - 1][k])
-                return wynik[::-1]
+                if done is True:
+                    for k in range(column_len * 2 - 1, column_len - 1, -1):
+                        wynik.append(matrix[q][k])
+                    return wynik[::-1]
 
         for x in range(1, column_len):
             if y + x > column_len - 1:
@@ -358,7 +359,6 @@ def macierz_wartosci_wlasnych(a, wartosc_wlasna):
 
 
 def vectorOfMatrix(a):
-
     wartosci_wlasne = np.linalg.eigvals(a).round()
     wartosci_wlasne[::-1].sort()
     wynik = []
@@ -378,7 +378,6 @@ def svd(matrix):
     aat = np.dot(matrix, matrix.T)
     ata = np.dot(matrix.T, matrix)
 
-    # print(aat)
     wartosci_wlasne_U = np.linalg.eigvals(aat)
     wartosci_wlasne_V = np.linalg.eigvals(ata)
 
@@ -399,9 +398,23 @@ def svd(matrix):
     print(U)
     print(V)
 
-    # print(np.dot(np.dot(U,singular_matrix),V))
+    print(oblicz_v(matrix, U, singular_values))
+
+def oblicz_v(matrix, u, singular_values):
+    v = []
+    ata = np.dot(matrix.T, matrix)
 
 
+    for i in range(matrix.shape[0]):
+        v.append(np.dot(matrix.T, u[i] * 1/singular_values[i]))
+
+    if matrix.shape[0] < matrix.shape[1]:
+        matrix_with_ones = np.append(ata, np.eye(matrix.shape[1]), axis=1)
+        vector = gauss(matrix_with_ones)
+        normalized = vector / np.linalg.norm(vector)
+        v.append(normalized)
+
+    return np.array(v)
 
 b = np.array([[1., 2., 1., 0.],
               [2., 4., 0., 1.]
@@ -418,8 +431,30 @@ b = np.array([[-4., 2., 1., 0.],
 A = np.array([[1., 2., 0.],
               [2., 0., 2.]
               ])
+
+A = np.array([[1., 1.],
+              [0., 1.],
+              [-1., 1.]
+              ])
+
+A = np.array([[3., 2., 2.],
+              [2., 3., -2.]
+              ])
 svd(A)
 
+C = np.array([[-12., 12., 2., 1., 0., 0.],
+              [12., -12., -2., 0., 1., 0.],
+              [2., -2., -17., 0., 0., 1.]
+              ])
+
+# print(gauss(C))
+
+D = np.array([[13., 12., 2., 1., 0., 0.],
+              [12., 13., -2., 0., 1., 0.],
+              [2., -2., 8., 0., 0., 1.]
+              ])
+# print(gauss2(C))
+# print(gauss(D))
 
 
 # qr = macierz_QR2(matrix)
